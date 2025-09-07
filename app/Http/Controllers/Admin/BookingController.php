@@ -46,6 +46,26 @@ class BookingController extends Controller
         ]);
     }
 
+    public function create(\App\Models\Car $car)
+    {
+        // Ambil booking mendatang untuk mobil ini (kecuali yang dibatalkan)
+        $futureBookings = Booking::where('car_id', $car->id)
+            ->where('status', '!=', 'cancelled')
+            ->get(['start_date', 'end_date'])
+            ->map(function ($b) {
+                // Pastikan format yang dikirim ke frontend mudah dipakai DatePicker
+                return [
+                    'start_date' => \Carbon\Carbon::parse($b->start_date)->toDateString(),
+                    'end_date'   => \Carbon\Carbon::parse($b->end_date)->toDateString(),
+                ];
+            })->values();
+
+        return Inertia::render('Booking/Create', [
+            'car' => $car,
+            'futureBookings' => $futureBookings,
+        ]);
+    }
+
     public function show(Booking $booking)
     {
         // Muat semua relasi untuk modal detail

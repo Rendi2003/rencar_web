@@ -31,21 +31,23 @@ class RegisteredUserController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
+            'full_name' => 'required|string|max:255',
+            'email' => 'required|string|lowercase|email|max:255|unique:' . User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
         $user = User::create([
-            'name' => $request->name,
+            'full_name' => $request->full_name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role' => 'penyewa', // <-- Perubahan utama di sini
         ]);
 
         event(new Registered($user));
 
         Auth::login($user);
 
+        // Setelah registrasi, arahkan ke dashboard penyewa
         return redirect(route('dashboard', absolute: false));
     }
 }

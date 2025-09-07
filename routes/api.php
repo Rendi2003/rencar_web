@@ -38,18 +38,23 @@ Route::get('/banners', [BannerController::class, 'index']);
 */
 Route::middleware('auth:sanctum')->group(function () {
     // Rute Otentikasi
-    Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('/user', function (Request $request) {
-        return response()->json([
-            'success' => true,
-            'data' => [
-                'user' => $request->user()
-            ]
-        ]);
+    Route::get('/user', [AuthController::class, 'user']);
+
+    // Rute untuk mendapatkan daftar mobil
+    Route::get('/cars', [CarController::class, 'index']);
+
+    // Rute untuk mendapatkan detail mobil
+    Route::get('/cars/{car}', [CarController::class, 'show']);
+
+    // Rute untuk mendapatkan banner
+    Route::get('/banners', [BannerController::class, 'index']);
+
+    // Rute untuk mendapatkan riwayat pesanan (contoh)
+    Route::get('/my-bookings', function (Request $request) {
+        // Logika untuk mengambil pesanan user
+        // Misalnya: return $request->user()->bookings;
     });
 
-    // Rute Data
-    Route::get('/my-bookings', [BookingController::class, 'myBookings']);
-    Route::post('/bookings', [BookingController::class, 'store']);
-    Route::post('/reviews', [ReviewController::class, 'store']);
+    // Rute untuk logout
+    Route::post('/logout', [AuthController::class, 'logout']);
 });
