@@ -4,9 +4,10 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
+
 // Controllers (public)
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\BookingController;                // controller user/public
+use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 
@@ -44,45 +45,27 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // -----------------------
-    // Rute Admin (prefix /admin, name admin.*)
-    // -----------------------
+    // ... (Rute Admin tidak diubah) ...
     Route::middleware(['admin'])->prefix('admin')->name('admin.')->group(function () {
         // Users & Cars (admin)
         Route::resource('users', UserController::class)->except(['create', 'edit', 'show']);
         Route::resource('cars', CarController::class)->except(['show']);
-
-        // Bulk update cars status
         Route::post('cars/bulk-update-status', [CarController::class, 'bulkUpdateStatus'])->name('cars.bulkUpdateStatus');
-
-        // Admin bookings -> gunakan AdminBookingController
         Route::post('bookings/bulk-update-status', [AdminBookingController::class, 'bulkUpdateStatus'])->name('bookings.bulkUpdateStatus');
         Route::resource('bookings', AdminBookingController::class);
-
-        // Payments / Verifications (admin)
         Route::get('payments', [PaymentController::class, 'index'])->name('payments.index');
         Route::put('payments/{payment}', [PaymentController::class, 'update'])->name('payments.update');
-
         Route::get('verifications', [VerificationController::class, 'index'])->name('verifications.index');
         Route::put('verifications/documents/{document}', [VerificationController::class, 'updateDocumentStatus'])->name('verifications.document.update');
-
-        // Content & marketing
         Route::get('content', [ContentController::class, 'index'])->name('content.index');
-
-        // Promotions
         Route::post('content/promotions', [ContentController::class, 'storePromotion'])->name('content.promotions.store');
         Route::put('content/promotions/{promotion}', [ContentController::class, 'updatePromotion'])->name('content.promotions.update');
         Route::delete('content/promotions/{promotion}', [ContentController::class, 'destroyPromotion'])->name('content.promotions.destroy');
-
-        // Banners (update via POST to handle file multipart if needed)
         Route::post('content/banners', [ContentController::class, 'storeBanner'])->name('content.banners.store');
         Route::post('content/banners/{banner}', [ContentController::class, 'updateBanner'])->name('content.banners.update');
         Route::delete('content/banners/{banner}', [ContentController::class, 'destroyBanner'])->name('content.banners.destroy');
         Route::put('content/banners/{banner}/status', [ContentController::class, 'updateBannerStatus'])->name('content.banners.updateStatus');
-
-        // Reports & Settings
         Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
-
         Route::get('settings', [SettingController::class, 'index'])->name('settings.index');
         Route::put('settings', [SettingController::class, 'update'])->name('settings.update');
         Route::put('settings/password', [SettingController::class, 'changePassword'])->name('settings.change_password');
@@ -98,15 +81,28 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/cars/{car}', [HomeController::class, 'show'])->name('cars.show');
 
     // Booking (publik/penyewa)
-    // Saya gunakan plural 'bookings.*' agar konsisten dengan resource naming Laravel
+    // === KODE YANG DIPERBAIKI ADA DI SINI ===
     Route::get('/my-bookings', [BookingController::class, 'index'])->name('booking.index');
     Route::get('/cars/{car}/book', [BookingController::class, 'create'])->name('booking.create');
     Route::post('/bookings', [BookingController::class, 'store'])->name('booking.store');
+    Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
 
-    // (Opsional) single booking show/edit if diperlukan:
-    // Route::get('/bookings/{booking}', [BookingController::class, 'show'])->name('bookings.show');
-    // Route::put('/bookings/{booking}', [BookingController::class, 'update'])->name('bookings.update');
+    // Pastikan nama route ini adalah 'booking.show' (tunggal)
+    Route::get('/bookings/{booking}', [BookingController::class, 'show'])->name('booking.show');
+    Route::get('/bookings/{id}/payment', [BookingController::class, 'payment'])
+    ->name('bookings.payment');
+    Route::get('/bookings/{id}/payment/methods', [PaymentController::class, 'methods'])->name('payment.methods');
+    Route::get('/bookings/{id}/methods', [BookingController::class, 'methods'])->name('bookings.methods');
+    Route::post('/bookings/{id}/choose-method', [BookingController::class, 'chooseMethod'])
+    ->name('bookings.chooseMethod');
+    
+
+
+
+
+    
+    // === AKHIR DARI KODE YANG DIPERBAIKI ===
 });
 
-// Memuat rute-rute otentikasi standar dari Laravel (untuk halaman login, register, dll.)
+// Memuat rute-rute otentikasi standar dari Laravel
 require __DIR__ . '/auth.php';

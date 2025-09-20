@@ -36,13 +36,13 @@ export default function Index({ auth, bookings }) {
                                     {bookings.data.map((booking) => (
                                         <div key={booking.id} className="border rounded-lg p-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                                             <div className="flex items-center gap-4">
-                                                <img 
-                                                    src={`/storage/${booking.car.image_urls[0]}`} 
-                                                    alt={booking.car.brand} 
+                                                <img
+                                                    src={booking.car && booking.car.image_urls ? `/storage/${booking.car.image_urls[0]}` : 'https://via.placeholder.com/150'}
+                                                    alt={booking.car ? booking.car.brand : 'Mobil'}
                                                     className="w-24 h-16 object-cover rounded-md hidden sm:block"
                                                 />
                                                 <div>
-                                                    <h3 className="font-bold text-lg">{booking.car.brand} {booking.car.model}</h3>
+                                                    <h3 className="font-bold text-lg">{booking.car ? `${booking.car.brand} ${booking.car.model}`: 'Data Mobil Dihapus'}</h3>
                                                     <p className="text-sm text-gray-600">
                                                         {format(new Date(booking.start_date), 'dd MMM yyyy')} - {format(new Date(booking.end_date), 'dd MMM yyyy')}
                                                     </p>
@@ -51,9 +51,12 @@ export default function Index({ auth, bookings }) {
                                             </div>
                                             <div className="flex items-center gap-4 mt-2 md:mt-0">
                                                 <StatusBadge status={booking.status} />
-                                                <Link href="#" className="text-indigo-600 hover:text-indigo-900 text-sm font-medium">
+
+                                                {/* === KODE YANG DIPERBAIKI ADA DI SINI === */}
+                                                <Link href={route('booking.show', booking.id)} className="text-indigo-600 hover:text-indigo-900 text-sm font-medium">
                                                     Lihat Detail
                                                  </Link>
+                                                {/* === AKHIR DARI KODE YANG DIPERBAIKI === */}
                                             </div>
                                         </div>
                                     ))}

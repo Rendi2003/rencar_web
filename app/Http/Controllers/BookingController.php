@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers; 
 
 use App\Models\Car;
 use App\Models\Booking;
@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Redirect;
 class BookingController extends Controller
 {
 
-     public function index()
+    public function index()
     {
         $bookings = Booking::where('user_id', Auth::id())
             ->with('car') // Mengambil relasi data mobil
@@ -24,10 +24,34 @@ class BookingController extends Controller
             'bookings' => $bookings
         ]);
     }
+    public function methods($id)
+{
+    $booking = Booking::with('car')->findOrFail($id);
+
+    // Daftar metode pembayaran
+    $methods = [
+        ['name' => 'Transfer Bank (BCA)', 'code' => 'bank_bca'],
+        ['name' => 'Transfer Bank (BRI)', 'code' => 'bank_bri'],
+        ['name' => 'Transfer Bank (BNI)', 'code' => 'bank_bni'],
+        ['name' => 'Transfer Bank (Mandiri)', 'code' => 'bank_mandiri'],
+        ['name' => 'Dompet Elektronik (OVO, Gopay, Dana)', 'code' => 'ewallet'],
+        ['name' => 'Akun Virtual', 'code' => 'va'],
+        ['name' => 'Kartu Kredit/Debit', 'code' => 'credit_card'],
+        ['name' => 'Bayar di Tempat', 'code' => 'cod'],
+        ['name' => 'Bayar via WhatsApp', 'code' => 'whatsapp'],
+    ];
+
+    return Inertia::render('Methods', [
+        'booking' => $booking,
+        'methods' => $methods,
+    ]);
+}
+
+
     /**
      * Menampilkan halaman form pemesanan.
      */
-    public function create(\App\Models\Car $car)
+    public function create(Car $car)
     {
         // Ambil booking mendatang untuk mobil ini (kecuali yang dibatalkan)
         $futureBookings = Booking::where('car_id', $car->id)
@@ -36,8 +60,8 @@ class BookingController extends Controller
             ->map(function ($b) {
                 // Pastikan format yang dikirim ke frontend mudah dipakai DatePicker
                 return [
-                    'start_date' => \Carbon\Carbon::parse($b->start_date)->toDateString(),
-                    'end_date'   => \Carbon\Carbon::parse($b->end_date)->toDateString(),
+                    'start_date' => Carbon::parse($b->start_date)->toDateString(),
+                    'end_date'   => Carbon::parse($b->end_date)->toDateString(),
                 ];
             })->values();
 
@@ -91,7 +115,57 @@ class BookingController extends Controller
             'status' => 'pending', // Status awal adalah pending
         ]);
 
-        // Arahkan ke halaman "My Bookings" (akan kita buat nanti)
-        return Redirect::route('home')->with('success', 'Pemesanan berhasil dibuat dan menunggu konfirmasi.');
+        // Arahkan ke halaman "My Bookings"
+        return Redirect::route('bookings.index')->with('success', 'Pemesanan berhasil dibuat dan menunggu konfirmasi.');
     }
+
+    /**
+     * Menampilkan detail spesifik dari sebuah pesanan.
+     */
+    public function show(Booking $booking)
+    {
+        // Pastikan pengguna hanya bisa melihat booking miliknya sendiri
+        if ($booking->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        // Load relasi car agar datanya tersedia di frontend
+        $booking->load('car');
+
+        return Inertia::render('Booking/Show', [
+            'booking' => $booking
+        ]);
+    }
+    public function payment($id)
+{
+    $booking = Booking::findOrFail($id);
+    return Inertia::render('Booking/Payment', [
+        'booking' => $booking,
+    ]);
+}
+public function chooseMethod(Request $request, $id)
+{
+    $request->validate([
+        'method' => 'required|string',
+    ]);
+
+    $booking = Booking::findOrFail($id);
+
+    // pastikan hanya pemilik booking yang bisa update
+    if ($booking->user_id !== Auth::id()) {
+        abort(403);
+    }
+
+    // update metode pembayaran
+    $booking->update([
+        'payment_method' => $request->method,
+        'status' => 'waiting_payment',
+    ]);
+
+    // redirect ke halaman detail booking (atau bisa ke halaman instruksi pembayaran)
+    return Redirect::route('bookings.show', $booking->id)
+        ->with('success', 'Metode pembayaran berhasil dipilih.');
+}
+
+
 }
