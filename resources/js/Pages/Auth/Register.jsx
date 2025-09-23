@@ -1,11 +1,7 @@
-import { useEffect } from 'react';
-import GuestLayout from '@/Layouts/GuestLayout';
-import InputError from '@/Components/InputError';
-import InputLabel from '@/Components/InputLabel';
-import PrimaryButton from '@/Components/PrimaryButton';
-import TextInput from '@/Components/TextInput';
 import { Head, Link, useForm } from '@inertiajs/react';
-import toast from 'react-hot-toast'; // <-- 1. Import toast
+import { UserIcon, EnvelopeIcon, LockClosedIcon } from '@heroicons/react/24/outline';
+import { useEffect } from 'react';
+import toast from 'react-hot-toast';
 
 export default function Register() {
     const { data, setData, post, processing, errors, reset, wasSuccessful } = useForm({
@@ -16,12 +12,9 @@ export default function Register() {
     });
 
     useEffect(() => {
-        return () => {
-            reset('password', 'password_confirmation');
-        };
+        return () => reset('password', 'password_confirmation');
     }, []);
 
-    // Efek untuk menampilkan notifikasi
     useEffect(() => {
         if (wasSuccessful) {
             toast.success('Pendaftaran berhasil! Anda akan dialihkan.');
@@ -30,97 +23,163 @@ export default function Register() {
 
     const submit = (e) => {
         e.preventDefault();
-
         post(route('register'), {
-            onSuccess: () => {
-                // Pesan sukses sudah ditangani oleh useEffect di atas
-            },
-            onError: (errors) => {
-                // Menampilkan pesan error validasi pertama yang muncul
-                const firstError = Object.values(errors)[0];
+            onError: (errs) => {
+                const firstError = Object.values(errs)[0];
                 toast.error(firstError || 'Pendaftaran gagal. Periksa kembali data Anda.');
             },
         });
     };
 
     return (
-        <GuestLayout>
+        <div className="relative flex min-h-screen flex-col items-center bg-white">
             <Head title="Register" />
 
-            <form onSubmit={submit}>
-                <div>
-                    <InputLabel htmlFor="full_name" value="Full Name" />
-                    <TextInput
-                        id="full_name"
-                        name="full_name"
-                        value={data.full_name}
-                        className="mt-1 block w-full"
-                        autoComplete="name"
-                        isFocused={true}
-                        onChange={(e) => setData('full_name', e.target.value)}
-                        required
-                    />
-                    <InputError message={errors.full_name} className="mt-2" />
-                </div>
+            {/* ====== HEADER HIJAU (SAMA DENGAN LOGIN) ====== */}
+            <div
+                className="
+                absolute top-0 left-0 w-full h-[55vh]
+                bg-green-600 rounded-b-full overflow-hidden
+            "
+            >
+                <div className="absolute -left-20 -top-20 w-80 h-80 rounded-full bg-green-700/30"></div>
+                <div className="absolute -right-24 top-10 w-72 h-72 rounded-full bg-green-500/20"></div>
 
-                <div className="mt-4">
-                    <InputLabel htmlFor="email" value="Email" />
-                    <TextInput
-                        id="email"
-                        type="email"
-                        name="email"
-                        value={data.email}
-                        className="mt-1 block w-full"
-                        autoComplete="username"
-                        onChange={(e) => setData('email', e.target.value)}
-                        required
-                    />
-                    <InputError message={errors.email} className="mt-2" />
+                {/* Corak Titik-titik */}
+                <div className="absolute top-16 left-16 grid grid-cols-3 gap-2">
+                    {[...Array(9)].map((_, i) => (
+                        <div key={i} className="w-2 h-2 rounded-full bg-green-400/40"></div>
+                    ))}
                 </div>
-
-                <div className="mt-4">
-                    <InputLabel htmlFor="password" value="Password" />
-                    <TextInput
-                        id="password"
-                        type="password"
-                        name="password"
-                        value={data.password}
-                        className="mt-1 block w-full"
-                        autoComplete="new-password"
-                        onChange={(e) => setData('password', e.target.value)}
-                        required
-                    />
-                    <InputError message={errors.password} className="mt-2" />
+                <div className="absolute top-24 right-16 grid grid-cols-3 gap-2">
+                    {[...Array(9)].map((_, i) => (
+                        <div key={i} className="w-2 h-2 rounded-full bg-green-400/40"></div>
+                    ))}
                 </div>
+            </div>
 
-                <div className="mt-4">
-                    <InputLabel htmlFor="password_confirmation" value="Confirm Password" />
-                    <TextInput
-                        id="password_confirmation"
-                        type="password"
-                        name="password_confirmation"
-                        value={data.password_confirmation}
-                        className="mt-1 block w-full"
-                        autoComplete="new-password"
-                        onChange={(e) => setData('password_confirmation', e.target.value)}
-                        required
-                    />
-                    <InputError message={errors.password_confirmation} className="mt-2" />
+            {/* ====== LOGO (UKURAN SAMA LOGIN) ====== */}
+            <div className="relative mt-10 flex w-full justify-center z-10">
+                <div className="flex h-36 w-36 flex-col items-center justify-center rounded-full border-2 border-white bg-green-600 text-white shadow-lg">
+                    <h1 className="text-xl font-extrabold">FALAH</h1>
+                    <p className="text-sm font-semibold">RENT CAR</p>
                 </div>
+            </div>
 
-                <div className="flex items-center justify-end mt-4">
+            {/* ====== CARD REGISTER (SAMA STYLE LOGIN) ====== */}
+            <div className="relative z-20 mt-10 w-full max-w-md rounded-lg bg-white p-8 shadow-lg">
+                <h2 className="mb-6 text-center text-xl font-semibold text-gray-700">
+                    Sign up to join
+                </h2>
+
+                <form onSubmit={submit} className="space-y-4">
+                    {/* Full Name */}
+                    <div>
+                        <div className="flex items-center rounded-full border px-4 py-2">
+                            <UserIcon className="mr-2 h-5 w-5 text-gray-400" />
+                            <input
+                                id="full_name"
+                                type="text"
+                                name="full_name"
+                                value={data.full_name}
+                                className="w-full border-none text-gray-700 focus:outline-none focus:ring-0"
+                                placeholder="Full Name"
+                                onChange={(e) => setData('full_name', e.target.value)}
+                                required
+                            />
+                        </div>
+                        {errors.full_name && (
+                            <p className="mt-1 text-sm text-red-500">{errors.full_name}</p>
+                        )}
+                    </div>
+
+                    {/* Email */}
+                    <div>
+                        <div className="flex items-center rounded-full border px-4 py-2">
+                            <EnvelopeIcon className="mr-2 h-5 w-5 text-gray-400" />
+                            <input
+                                id="email"
+                                type="email"
+                                name="email"
+                                value={data.email}
+                                className="w-full border-none text-gray-700 focus:outline-none focus:ring-0"
+                                placeholder="Email Address"
+                                onChange={(e) => setData('email', e.target.value)}
+                                required
+                            />
+                        </div>
+                        {errors.email && (
+                            <p className="mt-1 text-sm text-red-500">{errors.email}</p>
+                        )}
+                    </div>
+
+                    {/* Password */}
+                    <div>
+                        <div className="flex items-center rounded-full border px-4 py-2">
+                            <LockClosedIcon className="mr-2 h-5 w-5 text-gray-400" />
+                            <input
+                                id="password"
+                                type="password"
+                                name="password"
+                                value={data.password}
+                                className="w-full border-none text-gray-700 focus:outline-none focus:ring-0"
+                                placeholder="Password"
+                                onChange={(e) => setData('password', e.target.value)}
+                                required
+                            />
+                        </div>
+                        {errors.password && (
+                            <p className="mt-1 text-sm text-red-500">{errors.password}</p>
+                        )}
+                    </div>
+
+                    {/* Confirm Password */}
+                    <div>
+                        <div className="flex items-center rounded-full border px-4 py-2">
+                            <LockClosedIcon className="mr-2 h-5 w-5 text-gray-400" />
+                            <input
+                                id="password_confirmation"
+                                type="password"
+                                name="password_confirmation"
+                                value={data.password_confirmation}
+                                className="w-full border-none text-gray-700 focus:outline-none focus:ring-0"
+                                placeholder="Confirm Password"
+                                onChange={(e) => setData('password_confirmation', e.target.value)}
+                                required
+                            />
+                        </div>
+                        {errors.password_confirmation && (
+                            <p className="mt-1 text-sm text-red-500">
+                                {errors.password_confirmation}
+                            </p>
+                        )}
+                    </div>
+
+                    {/* Button */}
+                    <button
+                        type="submit"
+                        disabled={processing}
+                        className="w-full rounded-full bg-blue-900 py-3 font-semibold text-white shadow transition hover:bg-blue-800"
+                    >
+                        {processing ? 'Registering...' : 'Sign up'}
+                    </button>
+                </form>
+
+                <div className="mt-4 text-center text-sm text-gray-600">
+                    Have an account?{' '}
                     <Link
                         href={route('login')}
-                        className="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        className="font-semibold text-blue-700 hover:underline"
                     >
-                        Sudah punya akun?
+                        Sign in
                     </Link>
-
-                    <PrimaryButton className="ms-4" disabled={processing}>
-                        {processing ? 'Mendaftar...' : 'Register'}
-                    </PrimaryButton>
                 </div>
-            </form>
-        </GuestLayout>
+            </div>
+
+            {/* ====== TAGLINE (SAMA LOGIN) ====== */}
+            <div className="mt-6 text-center text-sm text-gray-500">
+                cepat, mudah dan solusi keluarga
+            </div>
+        </div>
     );
 }
