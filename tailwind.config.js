@@ -15,6 +15,10 @@ export default {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
+            // Blok ini ditambahkan untuk warna kustom
+            colors: {
+                'neon-green': '#39FF14',
+            },
         },
     },
 

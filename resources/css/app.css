@@ -1,3 +1,14 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.dashboard-perspective {
+  /* Memberikan efek seolah-olah gambar miring ke belakang */
+  transform: perspective(1500px) rotateX(10deg);
+  transition: transform 0.3s ease;
+}
+
+.dashboard-perspective:hover {
+  /* Mengembalikan gambar ke posisi normal saat mouse diarahkan */
+  transform: perspective(2000px) rotateX(0deg);
+}

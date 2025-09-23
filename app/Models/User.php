@@ -49,6 +49,11 @@ class User extends Authenticatable
     {
         return $this->hasMany(Booking::class);
     }
+    public function documents()
+{
+    return $this->hasMany(UserDocument::class);
+}
+
 
     // Relasi: Pengguna memiliki banyak ulasan (reviews)
     public function reviews()

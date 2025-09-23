@@ -7,7 +7,6 @@ use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Inertia\Inertia;
@@ -40,14 +39,15 @@ class RegisteredUserController extends Controller
             'full_name' => $request->full_name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'penyewa', // <-- Perubahan utama di sini
+            'role' => 'penyewa',
         ]);
 
         event(new Registered($user));
 
-        Auth::login($user);
+        // 🚫 jangan login otomatis
+        // Auth::login($user);
 
-        // Setelah registrasi, arahkan ke dashboard penyewa
-        return redirect(route('dashboard', absolute: false));
+        // ✅ arahkan ke login dengan pesan sukses
+        return redirect()->route('login')->with('success', 'Registrasi berhasil, silakan login.');
     }
 }
