@@ -1,4 +1,3 @@
-import ApplicationLogo from '@/Components/ApplicationLogo';
 import Dropdown from '@/Components/Dropdown';
 import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
@@ -7,7 +6,6 @@ import { useState } from 'react';
 
 export default function AuthenticatedLayout({ header, children }) {
     const user = usePage().props.auth.user;
-
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
 
@@ -17,12 +15,19 @@ export default function AuthenticatedLayout({ header, children }) {
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div className="flex h-16 justify-between">
                         <div className="flex">
+                            {/* ====== LOGO BARU (FALAH RENT CAR) ====== */}
                             <div className="flex shrink-0 items-center">
                                 <Link href="/">
-                                    <ApplicationLogo className="block h-9 w-auto fill-current text-gray-800" />
+                                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-600 text-white shadow-md">
+                                        <div className="text-center leading-tight">
+                                            <h1 className="text-[10px] font-extrabold">FALAH</h1>
+                                            <p className="text-[8px] font-semibold">RENT CAR</p>
+                                        </div>
+                                    </div>
                                 </Link>
                             </div>
 
+                            {/* ====== MENU NAV ====== */}
                             <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                 <NavLink
                                     href={route('dashboard')}
@@ -31,16 +36,23 @@ export default function AuthenticatedLayout({ header, children }) {
                                     Dashboard
                                 </NavLink>
 
-                                <NavLink href={route('home')} active={route().current('home')}>
+                                <NavLink
+                                    href={route('home')}
+                                    active={route().current('home')}
+                                >
                                     Home
                                 </NavLink>
-                                {/* TAMBAHKAN NAVLINK BARU DI BAWAH INI */}
-                                <NavLink href={route('booking.index')} active={route().current('booking.index')}>
+
+                                <NavLink
+                                    href={route('booking.index')}
+                                    active={route().current('booking.index')}
+                                >
                                     My Bookings
                                 </NavLink>
                             </div>
                         </div>
 
+                        {/* ====== DROPDOWN USER ====== */}
                         <div className="hidden sm:ms-6 sm:flex sm:items-center">
                             <div className="relative ms-3">
                                 <Dropdown>
@@ -51,7 +63,6 @@ export default function AuthenticatedLayout({ header, children }) {
                                                 className="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
                                             >
                                                 {user.name}
-
                                                 <svg
                                                     className="-me-0.5 ms-2 h-4 w-4"
                                                     xmlns="http://www.w3.org/2000/svg"
@@ -69,9 +80,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                     </Dropdown.Trigger>
 
                                     <Dropdown.Content>
-                                        <Dropdown.Link
-                                            href={route('profile.edit')}
-                                        >
+                                        <Dropdown.Link href={route('profile.edit')}>
                                             Profile
                                         </Dropdown.Link>
                                         <Dropdown.Link
@@ -86,6 +95,7 @@ export default function AuthenticatedLayout({ header, children }) {
                             </div>
                         </div>
 
+                        {/* ====== HAMBURGER MENU (MOBILE) ====== */}
                         <div className="-me-2 flex items-center sm:hidden">
                             <button
                                 onClick={() =>
@@ -129,6 +139,7 @@ export default function AuthenticatedLayout({ header, children }) {
                     </div>
                 </div>
 
+                {/* ====== MENU MOBILE ====== */}
                 <div
                     className={
                         (showingNavigationDropdown ? 'block' : 'hidden') +
@@ -141,6 +152,18 @@ export default function AuthenticatedLayout({ header, children }) {
                             active={route().current('dashboard')}
                         >
                             Dashboard
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            href={route('home')}
+                            active={route().current('home')}
+                        >
+                            Home
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            href={route('booking.index')}
+                            active={route().current('booking.index')}
+                        >
+                            My Bookings
                         </ResponsiveNavLink>
                     </div>
 
