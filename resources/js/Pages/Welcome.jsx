@@ -1,6 +1,6 @@
 import { Head, Link } from "@inertiajs/react";
 
-export default function Welcome({ auth }) {
+export default function Welcome() {
     return (
         <>
             <Head title="Falah Rent Car" />
@@ -36,7 +36,7 @@ export default function Welcome({ auth }) {
                 {/* === Konten utama === */}
                 <main className="relative z-10 flex flex-col items-center justify-center text-center px-6">
                     
-                    {/* Logo bulat dengan background hijau dan border putih */}
+                    {/* Logo bulat */}
                     <div className="mb-12">
                         <div className="w-48 h-48 rounded-full border-4 border-white flex flex-col items-center justify-center shadow-lg bg-green-600 text-white">
                             <h1 className="text-2xl font-extrabold">FALAH</h1>
@@ -45,35 +45,24 @@ export default function Welcome({ auth }) {
                     </div>
 
                     {/* Tagline */}
-                    <h2 className="text-lg font-semibold mb-10">
+                    <h2 className="text-lg font-semibold mb-10 leading-relaxed">
                         CEPAT, MUDAH DAN <br /> SOLUSI KELUARGA
                     </h2>
 
                     {/* Tombol GET STARTED + LOGIN */}
                     <div className="flex gap-4">
-                        {auth.user ? (
-                            <Link
-                                href={route("dashboard")}
-                                className="bg-blue-900 px-8 py-3 rounded-lg font-bold text-white shadow hover:bg-blue-800"
-                            >
-                                GO TO DASHBOARD
-                            </Link>
-                        ) : (
-                            <>
-                                <Link
-                                    href={route("register")}
-                                    className="bg-blue-900 px-8 py-3 rounded-lg font-bold text-white shadow hover:bg-blue-800"
-                                >
-                                    GET STARTED
-                                </Link>
-                                <Link
-                                    href={route("login")}
-                                    className="bg-white px-8 py-3 rounded-lg font-bold text-green-600 shadow hover:bg-gray-100"
-                                >
-                                    LOGIN
-                                </Link>
-                            </>
-                        )}
+                        <Link
+                            href={route("register")}
+                            className="bg-blue-900 px-8 py-3 rounded-lg font-bold text-white shadow hover:bg-blue-800 transition-all"
+                        >
+                            GET STARTED
+                        </Link>
+                        <Link
+                            href={route("login")}
+                            className="bg-white px-8 py-3 rounded-lg font-bold text-green-600 shadow hover:bg-gray-100 transition-all"
+                        >
+                            LOGIN
+                        </Link>
                     </div>
                 </main>
             </div>

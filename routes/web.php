@@ -96,6 +96,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/bookings/{id}/choose-method', [BookingController::class, 'chooseMethod'])
     ->name('bookings.chooseMethod');
     
+    
 
 
 

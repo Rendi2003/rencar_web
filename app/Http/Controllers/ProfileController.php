@@ -4,20 +4,20 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Storage; // Penting untuk mengelola file
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class ProfileController extends Controller
 {
     /**
-     * Display the user's profile form.
+     * Tampilkan form profil user.
      */
     public function edit(Request $request): Response
     {
-        // Kita tambahkan data profil tambahan untuk dikirim ke frontend
         $user = $request->user();
 
         return Inertia::render('Profile/Edit', [
@@ -30,49 +30,49 @@ class ProfileController extends Controller
                 'ktp_path' => $user->ktp_path ? Storage::url($user->ktp_path) : null,
                 'sim_path' => $user->sim_path ? Storage::url($user->sim_path) : null,
                 'verification_status' => $user->verification_status,
-            ]
+            ],
         ]);
     }
 
     /**
-     * Update the user's profile information.
+     * Update data profil user.
      */
     public function update(Request $request): RedirectResponse
     {
-        // Validasi data yang masuk
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'phone' => 'nullable|string|max:20',
+            'name'    => 'required|string|max:255',
+            'email'   => 'required|email|max:255',
+            'phone'   => 'nullable|string|max:20',
             'address' => 'nullable|string',
         ]);
 
         $user = $request->user();
         $user->fill($validated);
 
+        // Reset verifikasi email jika email diubah
         if ($user->isDirty('email')) {
             $user->email_verified_at = null;
         }
 
         $user->save();
 
+        // Kirim flash status untuk notifikasi sukses
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
 
     /**
-     * Handle document uploads.
+     * Upload dokumen KTP & SIM.
      */
     public function uploadDocuments(Request $request): RedirectResponse
     {
         $request->validate([
-            'ktp' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Maks 2MB
-            'sim' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Maks 2MB
+            'ktp' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'sim' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         $user = Auth::user();
 
         if ($request->hasFile('ktp')) {
-            // Hapus file lama jika ada
             if ($user->ktp_path) {
                 Storage::disk('public')->delete($user->ktp_path);
             }
@@ -81,15 +81,13 @@ class ProfileController extends Controller
         }
 
         if ($request->hasFile('sim')) {
-            // Hapus file lama jika ada
             if ($user->sim_path) {
                 Storage::disk('public')->delete($user->sim_path);
             }
             $path = $request->file('sim')->store('documents', 'public');
             $user->sim_path = $path;
         }
-        
-        // Ubah status verifikasi menjadi pending setelah upload
+
         $user->verification_status = 'pending';
         $user->save();
 
@@ -97,7 +95,7 @@ class ProfileController extends Controller
     }
 
     /**
-     * Delete the user's account.
+     * Hapus akun user.
      */
     public function destroy(Request $request): RedirectResponse
     {
@@ -108,7 +106,6 @@ class ProfileController extends Controller
         $user = $request->user();
 
         Auth::logout();
-
         $user->delete();
 
         $request->session()->invalidate();

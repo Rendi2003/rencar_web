@@ -29,12 +29,7 @@ export default function AuthenticatedLayout({ header, children }) {
 
                             {/* ====== MENU NAV ====== */}
                             <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                <NavLink
-                                    href={route('dashboard')}
-                                    active={route().current('dashboard')}
-                                >
-                                    Dashboard
-                                </NavLink>
+
 
                                 <NavLink
                                     href={route('home')}
@@ -64,7 +59,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                             >
                                                 {user.name}
                                                 <svg
-                                                    className="-me-0.5 ms-2 h-4 w-4"
+                                                    className="-me-0.5 ms-2 h-6 w-6"
                                                     xmlns="http://www.w3.org/2000/svg"
                                                     viewBox="0 0 20 20"
                                                     fill="currentColor"
